@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Report – {{ student.name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background: #fff;
+            color: #333;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header img {
+            width: 100px;
+            margin-bottom: 10px;
+        }
+
+        h1, h2 {
+            margin-bottom: 5px;
+        }
+
+        h3 {
+            font-weight: normal;
+            margin-top: 0;
+            color: #555;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+        .remarks {
+            margin-top: 20px;
+        }
+
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 13px;
+            color: #777;
+        }
+
+        @media print {
+            button { display: none; }
+        }
+    </style>
+</head>
+<body onload="window.print()">
+    <div class="header">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="School Logo">
+        <h1>KCSE Junior School Portal</h1>
+        <h3>Student Performance Report – Term 2, 2025</h3>
+    </div>
+
+    <h2>📄 {{ student.name }}</h2>
+
+    <table>
+        <tr>
+            <th>Subject</th>
+            <th>Score</th>
+            <th>Grade</th>
+        </tr>
+        {% for subj in subjects %}
+        <tr>
+            <td>{{ subj }}</td>
+            <td>{{ student.subjects.get(subj, 0) }}</td>
+            <td>{{ grades.get(subj) }}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <th>Total</th>
+            <th colspan="2">{{ total }}</th>
+        </tr>
+        <tr>
+            <th>Performance</th>
+            <th colspan="2">{{ performance }}</th>
+        </tr>
+    </table>
+
+    <div class="remarks">
+        <strong>Remarks:</strong> {{ student.remarks }}
+    </div>
+
+    <div class="footer">
+        KCSE Junior School • Printed {{ total }} marks • {{ performance }}
+    </div>
+</body>
+</html>

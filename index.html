@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Junior School Exam Portal</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+            margin: 40px;
+        }
+
+        h2, h3 {
+            color: #333;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            background: #fff;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+        input, select, button {
+            margin-top: 8px;
+            padding: 8px;
+            width: 300px;
+            font-size: 15px;
+        }
+
+        button {
+            background: #007BFF;
+            color: white;
+            border: none;
+            width: 100px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .form-box {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 350px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .logout-link {
+            float: right;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        canvas {
+            margin-top: 20px;
+        }
+
+        .view-link {
+            text-decoration: none;
+            color: #007BFF;
+        }
+
+        .view-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <p class="logout-link"><a href="/logout">Log Out</a></p>
+
+    <h2>🎓 Enter Student Marks</h2>
+    <div class="form-box">
+        <form action="/submit" method="POST">
+            <input name="name" placeholder="Student Name" required><br>
+            <select name="subject">
+                {% for subj in subjects %}
+                    <option>{{ subj }}</option>
+                {% endfor %}
+            </select><br>
+            <input name="score" type="number" placeholder="Score" required><br>
+            <input name="remarks" placeholder="Optional Remarks"><br>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <h3>📊 Class Performance Dashboard</h3>
+    <table>
+        <tr>
+            <th>Subject</th>
+            <th>Average</th>
+        </tr>
+        {% for subj, avg in averages.items() %}
+            <tr>
+                <td>{{ subj }}</td>
+                <td>{{ avg }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <h3>📈 Class Average Chart</h3>
+    <canvas id="averageChart" width="800" height="400"></canvas>
+
+    <h3>📋 Student Records</h3>
+    <table>
+        <tr>
+            <th>Name</th>
+            {% for subj in subjects %}
+                <th>{{ subj }}</th>
+            {% endfor %}
+            <th>Total</th>
+            <th>Performance</th>
+            <th>Rank</th>
+            <th>Remarks</th>
+            <th>Report</th>
+        </tr>
+        {% for student in students %}
+        <tr>
+            <td>{{ student.name }}</td>
+            {% for subj in subjects %}
+                <td>{{ student.subjects.get(subj, 0) }}</td>
+            {% endfor %}
+            <td>{{ student.total }}</td>
+            <td>{{ student.performance }}</td>
+            <td>{{ student.rank }}</td>
+            <td>{{ student.remarks }}</td>
+            <td>
+                <a href="/report/{{ student.name | urlencode }}" target="_blank" class="view-link">View</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <script>
+        const labels = {{ subjects | tojson }};
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: 'Average Score per Subject',
+                data: [
+                    {% for subj in subjects %}
+                        {{ averages.get(subj, 0) }},
+                    {% endfor %}
+                ],
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        const config = {
+            type: 'bar',
+            data: data,
+            options: {
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        };
+
+        new Chart(document.getElementById('averageChart'), config);
+    </script>
+
+</body>
+</html>
+
